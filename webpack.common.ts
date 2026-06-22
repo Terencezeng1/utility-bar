@@ -15,7 +15,8 @@ import * as webpack from "webpack";
 
 const config: webpack.Configuration = {
   entry: {
-    "staffbase.utility-bar": "./src/index.tsx",
+    // 🚀 CACHE BUSTER FIX: Appended -v2 to force Staffbase to pull the absolute latest build
+    "staffbase.utility-bar-v2": "./src/index.tsx",
   },
   module: {
     rules: [
@@ -36,7 +37,7 @@ const config: webpack.Configuration = {
       // 2. Standard SVGs: Convert into React Components (EXCLUDES your icon)
       {
         test: /\.svg$/i,
-        exclude: /utility-bar\.svg$/, // 👈 FIX: Prevents loader collision
+        exclude: /utility-bar\.svg$/, // Prevents loader collision
         use: [{ loader: "@svgr/webpack", options: { icon: true } }],
       },
       // 3. Widget Icon SVG: Convert into a clean URL string for Staffbase Studio
