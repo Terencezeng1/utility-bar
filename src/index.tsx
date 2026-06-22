@@ -3,7 +3,7 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -26,7 +26,8 @@ import icon from "../resources/utility-bar.svg";
 import pkg from "../package.json";
 
 const widgetAttributes: string[] = [
-  "items",
+  "fieldlabel",
+  "linksjson",
   "bgcolor",
   "textcolor",
   "iconcolor",
@@ -48,17 +49,37 @@ const factory: BlockFactory = (BaseBlockClass, _widgetApi) => {
     private get props(): UtilityBarProps {
       const attrs = this.parseAttributes<any>();
 
+      // Safe evaluation parser: converts the text area input back into a clean array structure
       let parsedItems = [];
       try {
         parsedItems =
-          typeof attrs.items === "string"
-            ? JSON.parse(attrs.items)
-            : attrs.items || [];
+          typeof attrs.linksjson === "string"
+            ? JSON.parse(attrs.linksjson)
+            : [];
       } catch (e) {
-        parsedItems = [];
+        // Safe fallback fallback layout to prevent crashes if an administrator types broken JSON
+        parsedItems = [
+          {
+            id: "1",
+            label: "IT Help Desk",
+            link: "https://google.com",
+            iconName: "LifeBuoy",
+          },
+          {
+            id: "2",
+            label: "HR Portal",
+            link: "https://google.com",
+            iconName: "User",
+          },
+          {
+            id: "3",
+            label: "Company Handbook",
+            link: "https://google.com",
+            iconName: "BookOpen",
+          },
+        ];
       }
 
-      // Maps data attributes directly into our custom component interface layout
       return {
         items: parsedItems,
         bgcolor: attrs.bgcolor,
@@ -87,7 +108,7 @@ const factory: BlockFactory = (BaseBlockClass, _widgetApi) => {
       oldValue: string,
       newValue: string,
     ): void {
-      super.attributeChangedCallback.apply(this, [name, oldValue, newValue]);
+      super.attributeChangedCallback(name, oldValue, newValue);
 
       if (oldValue !== newValue) {
         this.renderBlock(this);

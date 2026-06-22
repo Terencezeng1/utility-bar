@@ -16,88 +16,68 @@ import { JSONSchema7 } from "json-schema";
 
 export const configurationSchema: JSONSchema7 = {
   type: "object",
-  required: ["items"],
+  required: ["linksjson"],
   properties: {
-    // CONTENT SCHEMA SECTIONS
-    items: {
-      type: "array",
-      title: "Portal Navigation Links",
-      description:
-        "Manage your support portals. You can append, modify, or delete elements cleanly.",
-      items: {
-        type: "object",
-        properties: {
-          id: {
-            type: "string",
-            title: "Item ID (Internal)",
-          },
-          label: {
-            type: "string",
-            title: "Portal Name / Label",
-            default: "Support Portal",
-          },
-          link: {
-            type: "string",
-            title: "Destination Web Link (URL)",
-            default: "https://portal.company.com",
-          },
-          iconname: {
-            type: "string",
-            title: "Lucide Icon Name",
-            default: "Link",
-          },
-        },
-      },
-      // Sets default structural entries so the bar looks rich immediately upon placement
-      default: [
-        {
-          id: "1",
-          label: "IT Help Desk",
-          link: "https://google.com",
-          iconname: "LifeBuoy",
-        },
-        {
-          id: "2",
-          label: "HR Portal",
-          link: "https://google.com",
-          iconname: "User",
-        },
-        {
-          id: "3",
-          label: "Company Handbook",
-          link: "https://google.com",
-          iconname: "BookOpen",
-        },
-      ],
+    fieldlabel: {
+      type: "string",
+      title: "Bar Title",
+      default: "Quick Links",
     },
-
-    // STYLING PALETTE PARAMETERS
+    // Fixes the layout breakage by converting the complex array into a stable text area string
+    linksjson: {
+      type: "string",
+      title: "Navigation Links (JSON Array Format)",
+      description:
+        "Modify your navigation portals below. Ensure valid JSON structure is maintained.",
+      default: JSON.stringify(
+        [
+          {
+            id: "1",
+            label: "IT Help Desk",
+            link: "https://google.com",
+            iconName: "LifeBuoy",
+          },
+          {
+            id: "2",
+            label: "HR Portal",
+            link: "https://google.com",
+            iconName: "User",
+          },
+          {
+            id: "3",
+            label: "Company Handbook",
+            link: "https://google.com",
+            iconName: "BookOpen",
+          },
+        ],
+        null,
+        2,
+      ),
+    },
     bgcolor: {
       type: "string",
-      title: "Widget Background color",
+      title: "Widget Background Color",
       format: "color",
-      default: "#0f172a", // Matches Slate 900 theme default
+      default: "#0f172a",
     },
     textcolor: {
       type: "string",
       title: "Label Text Color",
       format: "color",
-      default: "#f8fafc", // Matches Slate 50 contrast default
+      default: "#f8fafc",
     },
     iconcolor: {
       type: "string",
       title: "Icon Accent Color",
       format: "color",
-      default: "#3b82f6", // Matches Blue 500 default
+      default: "#3b82f6",
     },
     hoverbgcolor: {
       type: "string",
       title: "Hover Highlight Color",
       format: "color",
-      default: "#1e293b", // Matches Slate 800 default
+      default: "#1e293b",
     },
-
-    // SIZING & PARAMS INTERFACE
     fontsize: {
       type: "string",
       title: "Widget Font Size",
@@ -124,7 +104,8 @@ export const configurationSchema: JSONSchema7 = {
 
 export const uiSchema: UiSchema = {
   "ui:order": [
-    "items",
+    "fieldlabel",
+    "linksjson",
     "bgcolor",
     "textcolor",
     "iconcolor",
@@ -134,7 +115,13 @@ export const uiSchema: UiSchema = {
     "showsubtitles",
     "openinnewtab",
   ],
-  // Provides dropdown assistance for font selection strings
+  // Tells Staffbase to render the string field as a large, multi-line editing box
+  linksjson: {
+    "ui:widget": "textarea",
+    "ui:options": {
+      rows: 8,
+    },
+  },
   fontsize: {
     "ui:widget": "select",
   },
