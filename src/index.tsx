@@ -3,7 +3,7 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -26,7 +26,6 @@ import icon from "../resources/utility-bar.svg";
 import pkg from "../package.json";
 
 const widgetAttributes: string[] = [
-  "fieldlabel",
   "linksjson",
   "bgcolor",
   "textcolor",
@@ -49,15 +48,11 @@ const factory: BlockFactory = (BaseBlockClass, _widgetApi) => {
     private get props(): UtilityBarProps {
       const attrs = this.parseAttributes<any>();
 
-      // Safe evaluation parser: converts the text area input back into a clean array structure
+      // Safe JSON parser block
       let parsedItems = [];
-      try {
-        parsedItems =
-          typeof attrs.linksjson === "string"
-            ? JSON.parse(attrs.linksjson)
-            : [];
-      } catch (e) {
-        // Safe fallback fallback layout to prevent crashes if an administrator types broken JSON
+      let jsonErrorStr: string | null = null;
+
+      if (!attrs.linksjson) {
         parsedItems = [
           {
             id: "1",
@@ -78,7 +73,20 @@ const factory: BlockFactory = (BaseBlockClass, _widgetApi) => {
             iconName: "BookOpen",
           },
         ];
+      } else {
+        try {
+          parsedItems = JSON.parse(attrs.linksjson);
+        } catch (e: any) {
+          jsonErrorStr = e.message;
+        }
       }
+
+      // Helper helper utility to properly convert incoming string attributes to real booleans
+      const castToBoolean = (value: any, fallback: boolean): boolean => {
+        if (value === undefined || value === null || value === "")
+          return fallback;
+        return value === true || value === "true";
+      };
 
       return {
         items: parsedItems,
@@ -87,9 +95,10 @@ const factory: BlockFactory = (BaseBlockClass, _widgetApi) => {
         iconcolor: attrs.iconcolor,
         hoverbgcolor: attrs.hoverbgcolor,
         fontsize: attrs.fontsize || "sm",
-        showdividers: attrs.showdividers !== false,
-        showsubtitles: attrs.showsubtitles === true,
-        openinnewtab: attrs.openinnewtab !== false,
+        showdividers: castToBoolean(attrs.showdividers, true),
+        showsubtitles: castToBoolean(attrs.showsubtitles, false),
+        openinnewtab: castToBoolean(attrs.openinnewtab, true),
+        jsonError: jsonErrorStr,
         contentLanguage: this.contentLanguage,
       };
     }
@@ -108,7 +117,7 @@ const factory: BlockFactory = (BaseBlockClass, _widgetApi) => {
       oldValue: string,
       newValue: string,
     ): void {
-      super.attributeChangedCallback(name, oldValue, newValue);
+      super.attributeChangedCallback.apply(this, [name, oldValue, newValue]);
 
       if (oldValue !== newValue) {
         this.renderBlock(this);

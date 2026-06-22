@@ -18,12 +18,6 @@ export const configurationSchema: JSONSchema7 = {
   type: "object",
   required: ["linksjson"],
   properties: {
-    fieldlabel: {
-      type: "string",
-      title: "Bar Title",
-      default: "Quick Links",
-    },
-    // Fixes the layout breakage by converting the complex array into a stable text area string
     linksjson: {
       type: "string",
       title: "Navigation Links (JSON Array Format)",
@@ -104,7 +98,6 @@ export const configurationSchema: JSONSchema7 = {
 
 export const uiSchema: UiSchema = {
   "ui:order": [
-    "fieldlabel",
     "linksjson",
     "bgcolor",
     "textcolor",
@@ -115,7 +108,6 @@ export const uiSchema: UiSchema = {
     "showsubtitles",
     "openinnewtab",
   ],
-  // Tells Staffbase to render the string field as a large, multi-line editing box
   linksjson: {
     "ui:widget": "textarea",
     "ui:options": {

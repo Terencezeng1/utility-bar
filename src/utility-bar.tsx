@@ -1,25 +1,7 @@
-/*!
- * Copyright 2026, Staffbase SE and contributors.
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *     http://www.apache.org/licenses/LICENSE-2.0
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
-import React, { ReactElement } from "react";
+import React, { ReactElement, useState } from "react";
 import LucideIcon from "./components/LucideIcon";
 import { UtilityItem } from "./types";
 
-/**
- * We define a clean interface for our component properties.
- * Decoupling this from the SDK's base block attributes eliminates
- * the primitive index signature errors completely.
- */
 export interface UtilityBarProps {
   items: UtilityItem[];
   bgcolor: string;
@@ -30,6 +12,7 @@ export interface UtilityBarProps {
   showdividers: boolean;
   showsubtitles: boolean;
   openinnewtab: boolean;
+  jsonError?: string | null;
   contentLanguage?: string;
 }
 
@@ -43,7 +26,34 @@ export const UtilityBar = ({
   showdividers,
   showsubtitles,
   openinnewtab,
+  jsonError,
 }: UtilityBarProps): ReactElement => {
+  // Dynamic interaction tracker for hover highlighting
+  const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
+
+  if (jsonError) {
+    return (
+      <div
+        style={{
+          padding: "16px",
+          backgroundColor: "#fef2f2",
+          color: "#991b1b",
+          border: "2px dashed #f87171",
+          borderRadius: "12px",
+          fontSize: "13px",
+          fontFamily: "sans-serif",
+        }}
+      >
+        <strong style={{ display: "block", marginBottom: "4px" }}>
+          ⚠️ JSON Formatting Alert
+        </strong>
+        <span>
+          {jsonError}. Please check your commas and straight quotation marks.
+        </span>
+      </div>
+    );
+  }
+
   const containerStyle: React.CSSProperties = {
     backgroundColor: bgcolor || "#0f172a",
     color: textcolor || "#f8fafc",
@@ -64,8 +74,8 @@ export const UtilityBar = ({
     <div style={containerStyle}>
       <div style={gridStyle}>
         {(items || []).map((item, idx) => {
-          // Bypasses properties casing mismatches safely between schema data layouts
           const activeIcon = item.iconName || (item as any).iconname || "Link";
+          const isItemHovered = hoveredIndex === idx;
 
           return (
             <a
@@ -73,6 +83,8 @@ export const UtilityBar = ({
               href={item.link}
               target={openinnewtab ? "_blank" : "_self"}
               rel="noopener noreferrer"
+              onMouseEnter={() => setHoveredIndex(idx)}
+              onMouseLeave={() => setHoveredIndex(null)}
               style={{
                 display: "flex",
                 flexDirection: "column",
@@ -92,9 +104,13 @@ export const UtilityBar = ({
                   showdividers && idx < items.length - 1
                     ? "1px solid currentColor"
                     : "none",
+                // Dynamically swaps styles whenever an active mouse track is recognized
+                backgroundColor: isItemHovered
+                  ? hoverbgcolor || "#1e293b"
+                  : "transparent",
+                transition: "background-color 0.15s ease-in-out",
               }}
             >
-              {/* Wraps the icon in a styled element to pass the custom accent color down cleanly */}
               <span
                 style={{
                   color: iconcolor || "inherit",
@@ -106,11 +122,12 @@ export const UtilityBar = ({
                 <LucideIcon name={activeIcon} size={20} />
               </span>
               <span style={{ fontWeight: 600 }}>{item.label}</span>
-              {showsubtitles && (
-                <span style={{ fontSize: "10px", opacity: 0.6 }}>
-                  {item.link
-                    ? item.link.replace(/^https?:\/\//i, "").split("/")[0]
-                    : ""}
+
+              {showsubtitles && item.link && (
+                <span
+                  style={{ fontSize: "10px", opacity: 0.6, marginTop: "2px" }}
+                >
+                  {item.link.replace(/^https?:\/\//i, "").split("/")[0]}
                 </span>
               )}
             </a>
