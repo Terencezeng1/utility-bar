@@ -3,7 +3,7 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -32,6 +32,7 @@ const widgetAttributes: string[] = [
   "iconcolor",
   "hoverbgcolor",
   "fontsize",
+  "barheight",
   "showdividers",
   "showsubtitles",
   "openinnewtab",
@@ -48,7 +49,6 @@ const factory: BlockFactory = (BaseBlockClass, _widgetApi) => {
     private get props(): UtilityBarProps {
       const attrs = this.parseAttributes<any>();
 
-      // Safe JSON parser block
       let parsedItems = [];
       let jsonErrorStr: string | null = null;
 
@@ -81,7 +81,6 @@ const factory: BlockFactory = (BaseBlockClass, _widgetApi) => {
         }
       }
 
-      // Helper helper utility to properly convert incoming string attributes to real booleans
       const castToBoolean = (value: any, fallback: boolean): boolean => {
         if (value === undefined || value === null || value === "")
           return fallback;
@@ -95,6 +94,7 @@ const factory: BlockFactory = (BaseBlockClass, _widgetApi) => {
         iconcolor: attrs.iconcolor,
         hoverbgcolor: attrs.hoverbgcolor,
         fontsize: attrs.fontsize || "sm",
+        barheight: attrs.barheight || "base",
         showdividers: castToBoolean(attrs.showdividers, true),
         showsubtitles: castToBoolean(attrs.showsubtitles, false),
         openinnewtab: castToBoolean(attrs.openinnewtab, true),
@@ -117,7 +117,7 @@ const factory: BlockFactory = (BaseBlockClass, _widgetApi) => {
       oldValue: string,
       newValue: string,
     ): void {
-      super.attributeChangedCallback.apply(this, [name, oldValue, newValue]);
+      super.attributeChangedCallback(name, oldValue, newValue);
 
       if (oldValue !== newValue) {
         this.renderBlock(this);

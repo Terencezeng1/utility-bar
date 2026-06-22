@@ -16,7 +16,7 @@ import * as webpack from "webpack";
 const config: webpack.Configuration = {
   entry: {
     // 🚀 CACHE BUSTER FIX: Appended -v2 to force Staffbase to pull the absolute latest build
-    "staffbase.utility-bar-v2": "./src/index.tsx",
+    "staffbase.utility-bar-v3": "./src/index.tsx",
   },
   module: {
     rules: [

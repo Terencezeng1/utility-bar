@@ -9,6 +9,7 @@ export interface UtilityBarProps {
   iconcolor: string;
   hoverbgcolor: string;
   fontsize: "xs" | "sm" | "base" | "lg";
+  barheight: "base" | "slim" | "extraslim";
   showdividers: boolean;
   showsubtitles: boolean;
   openinnewtab: boolean;
@@ -23,12 +24,12 @@ export const UtilityBar = ({
   iconcolor,
   hoverbgcolor,
   fontsize,
+  barheight,
   showdividers,
   showsubtitles,
   openinnewtab,
   jsonError,
 }: UtilityBarProps): ReactElement => {
-  // Dynamic interaction tracker for hover highlighting
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
 
   if (jsonError) {
@@ -54,10 +55,23 @@ export const UtilityBar = ({
     );
   }
 
+  // Determine padding based on the layout density option selected
+  const getContainerPadding = () => {
+    if (barheight === "extraslim") return "4px 16px";
+    if (barheight === "slim") return "8px 16px";
+    return "16px";
+  };
+
+  const getItemPadding = () => {
+    if (barheight === "extraslim") return "4px 8px";
+    if (barheight === "slim") return "8px 12px";
+    return "16px 8px";
+  };
+
   const containerStyle: React.CSSProperties = {
     backgroundColor: bgcolor || "#0f172a",
     color: textcolor || "#f8fafc",
-    padding: "16px",
+    padding: getContainerPadding(),
     borderRadius: "12px",
     fontFamily: "sans-serif",
   };
@@ -69,6 +83,9 @@ export const UtilityBar = ({
     borderRadius: "8px",
     overflow: "hidden",
   };
+
+  // If slim or extra slim is selected, use side-by-side alignment to match the mockup
+  const isInlineLayout = barheight === "slim" || barheight === "extraslim";
 
   return (
     <div style={containerStyle}>
@@ -87,11 +104,11 @@ export const UtilityBar = ({
               onMouseLeave={() => setHoveredIndex(null)}
               style={{
                 display: "flex",
-                flexDirection: "column",
+                flexDirection: isInlineLayout ? "row" : "column",
                 alignItems: "center",
                 justifyContent: "center",
-                gap: "8px",
-                padding: "16px 8px",
+                gap: isInlineLayout ? "12px" : "8px",
+                padding: getItemPadding(),
                 textDecoration: "none",
                 color: "inherit",
                 fontSize:
@@ -104,7 +121,6 @@ export const UtilityBar = ({
                   showdividers && idx < items.length - 1
                     ? "1px solid currentColor"
                     : "none",
-                // Dynamically swaps styles whenever an active mouse track is recognized
                 backgroundColor: isItemHovered
                   ? hoverbgcolor || "#1e293b"
                   : "transparent",
@@ -119,17 +135,25 @@ export const UtilityBar = ({
                   justifyContent: "center",
                 }}
               >
-                <LucideIcon name={activeIcon} size={20} />
+                <LucideIcon name={activeIcon} size={isInlineLayout ? 18 : 20} />
               </span>
-              <span style={{ fontWeight: 600 }}>{item.label}</span>
 
-              {showsubtitles && item.link && (
-                <span
-                  style={{ fontSize: "10px", opacity: 0.6, marginTop: "2px" }}
-                >
-                  {item.link.replace(/^https?:\/\//i, "").split("/")[0]}
-                </span>
-              )}
+              <div
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: isInlineLayout ? "flex-start" : "center",
+                }}
+              >
+                <span style={{ fontWeight: 600 }}>{item.label}</span>
+                {showsubtitles && item.link && (
+                  <span
+                    style={{ fontSize: "10px", opacity: 0.6, marginTop: "1px" }}
+                  >
+                    {item.link.replace(/^https?:\/\//i, "").split("/")[0]}
+                  </span>
+                )}
+              </div>
             </a>
           );
         })}

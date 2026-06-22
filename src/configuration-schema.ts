@@ -10,7 +10,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 import { UiSchema } from "@rjsf/utils";
 import { JSONSchema7 } from "json-schema";
 
@@ -78,6 +77,12 @@ export const configurationSchema: JSONSchema7 = {
       enum: ["xs", "sm", "base", "lg"],
       default: "sm",
     },
+    barheight: {
+      type: "string",
+      title: "Banner Layout Density",
+      enum: ["base", "slim", "extraslim"],
+      default: "base",
+    },
     showdividers: {
       type: "boolean",
       title: "Enable Vertical Dividers",
@@ -104,6 +109,7 @@ export const uiSchema: UiSchema = {
     "iconcolor",
     "hoverbgcolor",
     "fontsize",
+    "barheight",
     "showdividers",
     "showsubtitles",
     "openinnewtab",
@@ -115,6 +121,9 @@ export const uiSchema: UiSchema = {
     },
   },
   fontsize: {
+    "ui:widget": "select",
+  },
+  barheight: {
     "ui:widget": "select",
   },
 };
