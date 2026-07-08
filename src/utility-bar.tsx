@@ -4,12 +4,13 @@ import { UtilityItem } from "./types";
 
 export interface UtilityBarProps {
   items: UtilityItem[];
+  useicons: boolean;
   bgcolor: string;
   textcolor: string;
   iconcolor: string;
   hoverbgcolor: string;
-  fontsize: "xs" | "sm" | "base" | "lg";
-  barheight: "base" | "slim" | "extraslim";
+  fontsize: "xs" | "small" | "normal" | "large";
+  barheight: "normal" | "slim" | "extraslim";
   showdividers: boolean;
   showsubtitles: boolean;
   openinnewtab: boolean;
@@ -19,6 +20,7 @@ export interface UtilityBarProps {
 
 export const UtilityBar = ({
   items,
+  useicons,
   bgcolor,
   textcolor,
   iconcolor,
@@ -55,7 +57,6 @@ export const UtilityBar = ({
     );
   }
 
-  // Determine padding based on the layout density option selected
   const getContainerPadding = () => {
     if (barheight === "extraslim") return "4px 16px";
     if (barheight === "slim") return "8px 16px";
@@ -66,6 +67,13 @@ export const UtilityBar = ({
     if (barheight === "extraslim") return "4px 8px";
     if (barheight === "slim") return "8px 12px";
     return "16px 8px";
+  };
+
+  const getFontSizePx = () => {
+    if (fontsize === "xs") return "12px";
+    if (fontsize === "small") return "14px";
+    if (fontsize === "normal") return "16px";
+    return "18px";
   };
 
   const containerStyle: React.CSSProperties = {
@@ -84,14 +92,19 @@ export const UtilityBar = ({
     overflow: "hidden",
   };
 
-  // If slim or extra slim is selected, use side-by-side alignment to match the mockup
   const isInlineLayout = barheight === "slim" || barheight === "extraslim";
 
   return (
     <div style={containerStyle}>
       <div style={gridStyle}>
         {(items || []).map((item, idx) => {
-          const activeIcon = item.iconName || (item as any).iconname || "Link";
+          const rawIcon = item.iconName || (item as any).iconname || "";
+
+          // Combines the global configuration toggle logic with the custom individual item tracking rules
+          const hasIcon =
+            useicons &&
+            rawIcon.trim() !== "" &&
+            rawIcon.toLowerCase() !== "none";
           const isItemHovered = hoveredIndex === idx;
 
           return (
@@ -107,16 +120,11 @@ export const UtilityBar = ({
                 flexDirection: isInlineLayout ? "row" : "column",
                 alignItems: "center",
                 justifyContent: "center",
-                gap: isInlineLayout ? "12px" : "8px",
+                gap: hasIcon ? (isInlineLayout ? "12px" : "8px") : "0px",
                 padding: getItemPadding(),
                 textDecoration: "none",
                 color: "inherit",
-                fontSize:
-                  fontsize === "xs"
-                    ? "12px"
-                    : fontsize === "sm"
-                      ? "14px"
-                      : "16px",
+                fontSize: getFontSizePx(),
                 borderRight:
                   showdividers && idx < items.length - 1
                     ? "1px solid currentColor"
@@ -127,22 +135,25 @@ export const UtilityBar = ({
                 transition: "background-color 0.15s ease-in-out",
               }}
             >
-              <span
-                style={{
-                  color: iconcolor || "inherit",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                }}
-              >
-                <LucideIcon name={activeIcon} size={isInlineLayout ? 18 : 20} />
-              </span>
+              {hasIcon && (
+                <span
+                  style={{
+                    color: iconcolor || "inherit",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                  }}
+                >
+                  <LucideIcon name={rawIcon} size={isInlineLayout ? 18 : 20} />
+                </span>
+              )}
 
               <div
                 style={{
                   display: "flex",
                   flexDirection: "column",
-                  alignItems: isInlineLayout ? "flex-start" : "center",
+                  alignItems:
+                    isInlineLayout && hasIcon ? "flex-start" : "center",
                 }}
               >
                 <span style={{ fontWeight: 600 }}>{item.label}</span>

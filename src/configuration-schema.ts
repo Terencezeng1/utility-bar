@@ -1,15 +1,3 @@
-/*!
- * Copyright 2026, Staffbase SE and contributors.
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *     http://www.apache.org/licenses/LICENSE-2.0
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 import { UiSchema } from "@rjsf/utils";
 import { JSONSchema7 } from "json-schema";
 
@@ -47,6 +35,11 @@ export const configurationSchema: JSONSchema7 = {
         2,
       ),
     },
+    useicons: {
+      type: "boolean",
+      title: "Enable Icons Globally",
+      default: true,
+    },
     bgcolor: {
       type: "string",
       title: "Widget Background Color",
@@ -74,14 +67,14 @@ export const configurationSchema: JSONSchema7 = {
     fontsize: {
       type: "string",
       title: "Widget Font Size",
-      enum: ["xs", "sm", "base", "lg"],
-      default: "sm",
+      enum: ["xs", "small", "normal", "large"],
+      default: "normal",
     },
     barheight: {
       type: "string",
       title: "Banner Layout Density",
-      enum: ["base", "slim", "extraslim"],
-      default: "base",
+      enum: ["normal", "slim", "extraslim"],
+      default: "normal",
     },
     showdividers: {
       type: "boolean",
@@ -104,6 +97,7 @@ export const configurationSchema: JSONSchema7 = {
 export const uiSchema: UiSchema = {
   "ui:order": [
     "linksjson",
+    "useicons",
     "bgcolor",
     "textcolor",
     "iconcolor",
@@ -119,6 +113,9 @@ export const uiSchema: UiSchema = {
     "ui:options": {
       rows: 8,
     },
+    // Injects the interactive information helper tooltip bubble right under the textbox container label
+    "ui:help":
+      'Lucide Icon Library is used to pull icons. Typing in camelCase format required e.g. "LifeBuoy" vs life-buoy',
   },
   fontsize: {
     "ui:widget": "select",

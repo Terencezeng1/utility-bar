@@ -27,6 +27,7 @@ import pkg from "../package.json";
 
 const widgetAttributes: string[] = [
   "linksjson",
+  "useicons",
   "bgcolor",
   "textcolor",
   "iconcolor",
@@ -89,12 +90,13 @@ const factory: BlockFactory = (BaseBlockClass, _widgetApi) => {
 
       return {
         items: parsedItems,
+        useicons: castToBoolean(attrs.useicons, true),
         bgcolor: attrs.bgcolor,
         textcolor: attrs.textcolor,
         iconcolor: attrs.iconcolor,
         hoverbgcolor: attrs.hoverbgcolor,
-        fontsize: attrs.fontsize || "sm",
-        barheight: attrs.barheight || "base",
+        fontsize: attrs.fontsize || "normal",
+        barheight: attrs.barheight || "normal",
         showdividers: castToBoolean(attrs.showdividers, true),
         showsubtitles: castToBoolean(attrs.showsubtitles, false),
         openinnewtab: castToBoolean(attrs.openinnewtab, true),
@@ -117,7 +119,7 @@ const factory: BlockFactory = (BaseBlockClass, _widgetApi) => {
       oldValue: string,
       newValue: string,
     ): void {
-      super.attributeChangedCallback(name, oldValue, newValue);
+      super.attributeChangedCallback.apply(this, [name, oldValue, newValue]);
 
       if (oldValue !== newValue) {
         this.renderBlock(this);

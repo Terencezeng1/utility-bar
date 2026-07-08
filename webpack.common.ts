@@ -13,14 +13,15 @@
 
 import * as webpack from "webpack";
 
+// 🚀 FIX: Tell TypeScript that __dirname is a globally available string variable
+declare const __dirname: string;
+
 const config: webpack.Configuration = {
   entry: {
-    // 🚀 CACHE BUSTER FIX: Appended -v2 to force Staffbase to pull the absolute latest build
-    "staffbase.utility-bar-v3": "./src/index.tsx",
+    "staffbase.utility-bar-v5": "./src/index.tsx",
   },
   module: {
     rules: [
-      // 1. Clear the strict ESM extension pathing rule for node_modules
       {
         test: /\.mjs$/,
         include: /node_modules/,
@@ -34,13 +35,11 @@ const config: webpack.Configuration = {
         use: ["babel-loader"],
         exclude: /.*\/node_modules/,
       },
-      // 2. Standard SVGs: Convert into React Components (EXCLUDES your icon)
       {
         test: /\.svg$/i,
-        exclude: /utility-bar\.svg$/, // Prevents loader collision
+        exclude: /utility-bar\.svg$/,
         use: [{ loader: "@svgr/webpack", options: { icon: true } }],
       },
-      // 3. Widget Icon SVG: Convert into a clean URL string for Staffbase Studio
       {
         test: /utility-bar\.svg$/,
         use: [
